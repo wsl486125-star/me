@@ -1,0 +1,259 @@
+/*
+ * AIoT Edge — 全局样式与 Element Plus 深色主题覆盖
+ * 依赖 theme.css 中的令牌变量。
+ */
+
+/* ═══════════════ Element Plus 深色主题变量覆盖 ═══════════════ */
+html.dark {
+  --el-color-primary: #38bdf8;
+  --el-color-primary-light-3: #7dd3fc;
+  --el-color-primary-light-5: #38bdf8;
+  --el-color-primary-light-7: #0ea5e9;
+  --el-color-primary-light-8: #0284c7;
+  --el-color-primary-light-9: rgba(56, 189, 248, 0.12);
+  --el-color-primary-dark-2: #0ea5e9;
+
+  /* 语义色对齐规范 */
+  --el-color-success: #22c55e;
+  --el-color-warning: #eab308;
+  --el-color-danger: #ef4444;
+  --el-color-error: #ef4444;
+  --el-color-info: #64748b;
+
+  /* 背景 / 文字 / 边框 / 填充 */
+  --el-bg-color: #0b1220;
+  --el-bg-color-page: #0b1220;
+  --el-bg-color-overlay: #171f34;
+
+  --el-text-color-primary: #e2e8f0;
+  --el-text-color-regular: #cbd5e1;
+  --el-text-color-secondary: #94a3b8;
+  --el-text-color-placeholder: #7c8ca5;
+
+  --el-border-color: rgba(255, 255, 255, 0.12);
+  --el-border-color-light: rgba(255, 255, 255, 0.1);
+  --el-border-color-lighter: rgba(255, 255, 255, 0.08);
+  --el-border-color-extra-light: rgba(255, 255, 255, 0.06);
+
+  --el-fill-color: rgba(255, 255, 255, 0.06);
+  --el-fill-color-light: rgba(56, 189, 248, 0.06);
+  --el-fill-color-lighter: rgba(255, 255, 255, 0.04);
+  --el-fill-color-extra-light: rgba(255, 255, 255, 0.03);
+  --el-fill-color-blank: transparent;
+
+  /* 圆角：按钮 8px */
+  --el-border-radius-base: 8px;
+  --el-border-radius-small: 6px;
+  --el-border-radius-round: 8px;
+
+  /* 骨架屏配色 */
+  --el-skeleton-color: rgba(255, 255, 255, 0.05);
+  --el-skeleton-to-color: rgba(255, 255, 255, 0.11);
+}
+
+/* ═══════════════ 基础 ═══════════════ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(56, 189, 248, 0.06), transparent 45%),
+    radial-gradient(ellipse at 100% 100%, rgba(14, 165, 233, 0.05), transparent 50%),
+    var(--bg);
+  color: var(--text-1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ═══════════════ 卡片标题 / 头部（跨视图复用） ═══════════════ */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-8);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+/* ═══════════════ 卡片 · 玻璃拟态 ═══════════════ */
+.el-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: var(--transition);
+}
+.el-card:hover {
+  border-color: rgba(56, 189, 248, 0.22);
+  box-shadow: var(--shadow-hover);
+}
+.el-card__header {
+  border-bottom: 1px solid var(--border);
+  padding: var(--sp-16) var(--sp-24);
+}
+
+/* ═══════════════ 弹窗 · 12px 圆角 ═══════════════ */
+.el-dialog {
+  border-radius: var(--radius-dialog);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ═══════════════ 按钮 · hover 上浮 / 按下缩放 ═══════════════ */
+.el-button {
+  transition: var(--transition);
+  border-radius: var(--radius-btn);
+}
+.el-button:not(.is-disabled):hover {
+  transform: translateY(-2px);
+}
+.el-button:not(.is-disabled):active {
+  transform: scale(0.97);
+}
+
+/* 主按钮 · 渐变 + 辉光 */
+.el-button--primary {
+  background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+  border: none;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.28);
+}
+.el-button--primary:hover {
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+}
+
+/* 输入框聚焦 · 主色光晕 */
+.el-input__wrapper.is-focus,
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--primary) inset, 0 0 12px rgba(56, 189, 248, 0.15);
+}
+
+/* ═══════════════ 表格 · 去边框 / 隔行浅底 / hover 高亮 ═══════════════ */
+.el-table {
+  --el-table-border-color: transparent;
+  --el-table-header-bg-color: transparent;
+  background: transparent;
+}
+.el-table th.el-table__cell {
+  background: transparent;
+  color: var(--text-2);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+.el-table td.el-table__cell {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: rgba(255, 255, 255, 0.02);
+}
+.el-table .el-table__body tr:hover > td.el-table__cell {
+  background: rgba(56, 189, 248, 0.06);
+}
+
+/* 输入框 / 下拉 统一圆角 */
+.el-input__wrapper,
+.el-textarea__inner {
+  border-radius: var(--radius-btn);
+}
+
+/* ═══════════════ 呼吸动画（状态点 / 告警） ═══════════════ */
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: var(--sp-8);
+  vertical-align: middle;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: var(--sp-8);
+  vertical-align: middle;
+  animation: breathe 2s ease-in-out infinite;
+}
+.status-dot.online {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.55);
+}
+.status-dot.warning {
+  background: var(--warning);
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.55);
+}
+.status-dot.offline {
+  background: var(--danger);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.55);
+}
+
+/* ═══════════════ 辅助文字（跨视图复用） ═══════════════ */
+.cell-sub {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+/* ═══════════════ 键盘焦点环 ═══════════════ */
+:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.7);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ═══════════════ 减弱动效（可访问性） ═══════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .status-dot,
+  .dot {
+    animation: none !important;
+  }
+  .el-card,
+  .el-button,
+  .group-card {
+    transition: none !important;
+    transform: none !important;
+  }
+}

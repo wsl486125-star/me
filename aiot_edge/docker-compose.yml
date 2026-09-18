@@ -1,0 +1,131 @@
+# AIoT Edge — Docker Compose 多设备节点编排
+# 启动命令说明：
+#   docker-compose up -d --build   # 启动全部 10 台设备（device-1..10）
+#   docker-compose ps              # 查看容器状态
+#   docker-compose logs -f         # 查看日志
+#   docker-compose down            # 停止并清理
+#
+# 资源限制目的：
+#   通过不同的 mem_limit / cpus 模拟不同类型设备的硬件差异，
+#   让前端各设备的 CPU / 内存占用率呈现自然差异，演示更直观。
+
+services:
+  # ━━━ 设备1：核心路由器 ━━━
+  device-1:
+    build: ./agent
+    container_name: aiot-device-1
+    ports: ["9101:9100"]
+    mem_limit: 256m
+    cpus: 1.0
+    restart: unless-stopped
+    environment:
+      - LATENCY_TARGET=223.5.5.5
+      - LATENCY_PORT=443
+
+  # ━━━ 设备2：核心交换机 ━━━
+  device-2:
+    build: ./agent
+    container_name: aiot-device-2
+    ports: ["9102:9100"]
+    mem_limit: 256m
+    cpus: 1.0
+    restart: unless-stopped
+    environment:
+      - LATENCY_TARGET=223.5.5.5
+      - LATENCY_PORT=443
+
+  # ━━━ 设备3：边界网关 ━━━
+  device-3:
+    build: ./agent
+    container_name: aiot-device-3
+    ports: ["9103:9100"]
+    mem_limit: 256m
+    cpus: 1.0
+    restart: unless-stopped
+    environment:
+      - LATENCY_TARGET=223.5.5.5
+      - LATENCY_PORT=443
+
+  # ━━━ 设备4：温湿度传感器 ━━━
+  device-4:
+    build: ./agent
+    container_name: aiot-device-4
+    ports: ["9104:9100"]
+    mem_limit: 128m
+    cpus: 0.5
+    restart: unless-stopped
+    environment:
+      - LATENCY_TARGET=223.5.5.5
+      - LATENCY_PORT=443
+
+  # ━━━ 设备5：智能摄像头 ━━━
+  device-5:
+    build: ./agent
+    container_name: aiot-device-5
+    ports: ["9105:9100"]
+    mem_limit: 192m
+    cpus: 0.5
+    restart: unless-stopped
+    environment:
+      - LATENCY_TARGET=223.5.5.5
+      - LATENCY_PORT=443
+
+  # ━━━ 设备6：边缘计算服务器 ━━━
+  device-6:
+    build: ./agent
+    container_name: aiot-device-6
+    ports: ["9106:9100"]
+    mem_limit: 512m
+    cpus: 2.0
+    restart: unless-stopped
+    environment:
+      - LATENCY_TARGET=223.5.5.5
+      - LATENCY_PORT=443
+
+  # ━━━ 设备7：智能电表 ━━━
+  device-7:
+    build: ./agent
+    container_name: aiot-device-7
+    ports: ["9107:9100"]
+    mem_limit: 128m
+    cpus: 0.5
+    restart: unless-stopped
+    environment:
+      - LATENCY_TARGET=223.5.5.5
+      - LATENCY_PORT=443
+
+  # ━━━ 设备8：环境控制器 ━━━
+  device-8:
+    build: ./agent
+    container_name: aiot-device-8
+    ports: ["9108:9100"]
+    mem_limit: 128m
+    cpus: 0.5
+    restart: unless-stopped
+    environment:
+      - LATENCY_TARGET=223.5.5.5
+      - LATENCY_PORT=443
+
+  # ━━━ 设备9：接入路由器 ━━━
+  device-9:
+    build: ./agent
+    container_name: aiot-device-9
+    ports: ["9109:9100"]
+    mem_limit: 256m
+    cpus: 1.0
+    restart: unless-stopped
+    environment:
+      - LATENCY_TARGET=223.5.5.5
+      - LATENCY_PORT=443
+
+  # ━━━ 设备10：门禁传感器 ━━━
+  device-10:
+    build: ./agent
+    container_name: aiot-device-10
+    ports: ["9110:9100"]
+    mem_limit: 128m
+    cpus: 0.5
+    restart: unless-stopped
+    environment:
+      - LATENCY_TARGET=223.5.5.5
+      - LATENCY_PORT=443

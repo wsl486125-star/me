@@ -1,0 +1,51 @@
+# ━━━ 依赖与构建产物 ━━━
+node_modules/
+frontend/dist/
+dist/
+*.tsbuildinfo
+vite.config.js.timestamp-*.mjs
+
+# ━━━ Python ━━━
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+
+# ━━━ 环境变量与密钥（严禁提交）━━━
+.env
+.env.*
+!.env.example
+*.local
+
+# ━━━ 数据库文件 ━━━
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# ━━━ 模型缓存与运行时数据 ━━━
+models_cache/
+*.joblib
+*.pkl
+*.sav
+
+# ━━━ IDE / 编辑器 ━━━
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ━━━ 工具链本地配置 ━━━
+.claude/
+.workbuddy/
+
+# ━━━ 日志与临时文件 ━━━
+*.log
+logs/
+tmp/
+.DS_Store
+Thumbs.db
