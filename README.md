@@ -145,32 +145,37 @@ aiot_edge/
 
 ## 快速启动
 
-### 1. 配置数据库
+> 默认使用 **SQLite**（`DATABASE_TYPE=sqlite`），零外部依赖，首次启动自动建表。
+
+### 1. 后端（FastAPI）
 
 ```bash
 cd aiot_edge/backend
-cp .env.example .env
-# 编辑 .env，修改 MYSQL_USER / MYSQL_PASSWORD 等为实际值
-```
-
-### 2. 安装依赖
-
-```bash
+cp .env.example .env           # 按需填入 DeepSeek API Key；SQLite 模式无需配 MySQL
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-```
-
-### 3. 初始化数据库
-
-```bash
-python init_db.py
-```
-
-### 4. 启动服务
-
-```bash
-python main.py
-# 或
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 访问 http://localhost:8000/docs 查看 Swagger API 文档。
+
+### 2. 前端（Vue 3）
+
+```bash
+cd aiot_edge/frontend
+npm install
+npm run dev                    # 访问 http://localhost:5173
+```
+
+开发模式下 Vite 已将 `/api` 代理到 `http://localhost:8000`。
+
+### 3. 模拟设备节点（可选，需 Docker）
+
+```bash
+cd aiot_edge
+docker-compose up -d --build   # 启动 10 台模拟设备节点（真实 psutil 采集）
+```
+
+## 部署与持续集成
+
+完整部署说明见 **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**，覆盖云服务器生产部署、Nginx 反向代理、systemd 服务，以及基于 GitHub Actions 的持续部署（CI/CD）流程。一键部署脚本位于 `deploy/deploy.sh`，GitHub Actions 工作流位于 `.github/workflows/deploy.yml`。
