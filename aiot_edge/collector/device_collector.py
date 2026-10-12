@@ -28,13 +28,13 @@ DEVICES = [
      'agent_url': 'http://localhost:9103'},
     {'device_code': 'DEV-004', 'device_type': '传感器',
      'agent_url': 'http://localhost:9104'},
-    {'device_code': 'DEV-005', 'device_type': '摄像头',
+    {'device_code': 'DEV-005', 'device_type': 'NVR录像机',
      'agent_url': 'http://localhost:9105'},
     {'device_code': 'DEV-006', 'device_type': '边缘服务器',
      'agent_url': 'http://localhost:9106'},
     {'device_code': 'DEV-007', 'device_type': '智能电表',
      'agent_url': 'http://localhost:9107'},
-    {'device_code': 'DEV-008', 'device_type': '温控器',
+    {'device_code': 'DEV-008', 'device_type': '环境控制器',
      'agent_url': 'http://localhost:9108'},
     {'device_code': 'DEV-009', 'device_type': '路由器',
      'agent_url': 'http://localhost:9109'},
@@ -69,7 +69,7 @@ def _poll_device(dev: dict, interval: float):
             resp.raise_for_status()
             data = resp.json()
 
-            # 2. 转发给后端
+            # 2. 转发给后端（透传边缘侧就地判定结果 edge_alerts）
             payload = {
                 'device_code': dev['device_code'],
                 'cpu_usage': data['cpu_usage'],
@@ -77,6 +77,7 @@ def _poll_device(dev: dict, interval: float):
                 'network_latency': data['network_latency'],
                 'bandwidth_usage': data['bandwidth_usage'],
                 'disk_usage': data.get('disk_usage', 0.0),
+                'edge_alerts': data.get('edge_alerts', []),
             }
 
             backend_resp = requests.post(
@@ -90,13 +91,18 @@ def _poll_device(dev: dict, interval: float):
             if data.get('workload_active'):
                 workload_tag = f' [负载中:{data["workload_remaining_seconds"]}s]'
 
+            edge_tag = ''
+            edge_alerts = data.get('edge_alerts', [])
+            if edge_alerts:
+                edge_tag = f' [边缘预警:{len(edge_alerts)}]'
+
             if backend_resp.status_code in (200, 201):
                 print(
                     f'[{name}] CPU:{data["cpu_usage"]:5.1f}%  '
                     f'MEM:{data["memory_usage"]:5.1f}%  '
                     f'DISK:{data.get("disk_usage", 0.0):5.1f}%  '
                     f'LAT:{data["network_latency"]:6.1f}ms  '
-                    f'BW:{data["bandwidth_usage"]:6.2f}Mbps{workload_tag}  '
+                    f'BW:{data["bandwidth_usage"]:6.2f}Mbps{workload_tag}{edge_tag}  '
                     f'→ 后端OK'
                 )
             else:

@@ -96,6 +96,9 @@ def receive_metric(payload: DeviceMetricIngest, db: Session = Depends(get_db)):
             'metric_value': result.get('metric_value'),
             'threshold': result.get('threshold'),
             'detected_by': '边缘计算三层检测（阈值/滑动窗口/孤立森林）',
+            # 边缘侧第一层就地判定结果（若 agent 已本地预警，则记录协同信息）
+            'edge_alerts': payload.edge_alerts,
+            'edge_detected': len(payload.edge_alerts) > 0,
         }
         alert = create_alert(db, device.id, result, metric_snapshot=evidence_snapshot)
         # 异步触发 DeepSeek 语义复核（后台线程，不阻塞采集）

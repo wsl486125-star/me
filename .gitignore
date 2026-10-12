@@ -45,6 +45,8 @@ models_cache/
 
 # ━━━ 日志与临时文件 ━━━
 *.log
+*.log.*
+*.err
 logs/
 tmp/
 .DS_Store

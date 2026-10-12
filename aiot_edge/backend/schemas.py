@@ -110,6 +110,10 @@ class DeviceMetricIngest(BaseModel):
     network_latency: float = Field(..., ge=0, description='网络延迟(ms)')
     bandwidth_usage: float = Field(..., ge=0, description='带宽使用(Mbps)')
     disk_usage: Optional[float] = Field(None, ge=0, le=100, description='磁盘使用率(%)')
+    edge_alerts: Optional[List[dict]] = Field(
+        default_factory=list,
+        description='边缘侧第一层阈值就地判定结果（边缘计算下沉，由 agent 本地计算）',
+    )
 
 
 class DeviceMetricOut(BaseModel):

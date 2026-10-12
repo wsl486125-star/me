@@ -27,6 +27,52 @@ LATENCY_TARGET = os.getenv('LATENCY_TARGET', '223.5.5.5')
 LATENCY_PORT = int(os.getenv('LATENCY_PORT', '443'))
 
 # ═══════════════════════════════════════════════════════════
+# 边缘就地判定阈值（边缘计算第一层：阈值规则下沉到设备侧）
+# ═══════════════════════════════════════════════════════════
+# 真实边缘计算的核心特征之一，是「数据在靠近设备的边缘侧就地处理，
+# 只有判定结果才上送，降低中心侧算力与带宽压力」。本 Agent 在容器内
+# （即边缘设备侧）对 psutil 采集到的真实指标做第一层阈值判定：
+#   命中 → 标记 edge_alert，供采集器与后端识别「边缘已初步预警」；
+#   未命中 → 正常上报，交由中心侧完成第二、三层（滑动窗口/孤立森林）。
+# 阈值与后端 core/config.py 保持一致（默认 CPU>85 / 内存>90 / 延迟>200）。
+CPU_EDGE_THRESHOLD = float(os.getenv('CPU_EDGE_THRESHOLD', '85.0'))
+MEM_EDGE_THRESHOLD = float(os.getenv('MEM_EDGE_THRESHOLD', '90.0'))
+LATENCY_EDGE_THRESHOLD = float(os.getenv('LATENCY_EDGE_THRESHOLD', '200.0'))
+
+
+def _local_edge_judge(cpu_usage: float, memory_usage: float,
+                      network_latency: float) -> list:
+    """边缘侧第一层就地判定（阈值规则）
+
+    在设备本地对真实采集指标做阈值判断，返回命中的告警列表。
+    这是「边缘计算下沉」的落地体现：容器在数据源头即完成初步判定，
+    不依赖中心后端，模拟真实边缘网关的轻量就地计算能力。
+    """
+    alerts = []
+    if cpu_usage > CPU_EDGE_THRESHOLD:
+        alerts.append({
+            'alert_type': 'cpu_high',
+            'severity': 'high',
+            'metric_value': round(cpu_usage, 2),
+            'threshold': CPU_EDGE_THRESHOLD,
+        })
+    if memory_usage > MEM_EDGE_THRESHOLD:
+        alerts.append({
+            'alert_type': 'memory_high',
+            'severity': 'high',
+            'metric_value': round(memory_usage, 2),
+            'threshold': MEM_EDGE_THRESHOLD,
+        })
+    if network_latency > LATENCY_EDGE_THRESHOLD:
+        alerts.append({
+            'alert_type': 'latency_high',
+            'severity': 'medium',
+            'metric_value': round(network_latency, 2),
+            'threshold': LATENCY_EDGE_THRESHOLD,
+        })
+    return alerts
+
+# ═══════════════════════════════════════════════════════════
 # 带宽计算：记录上一次 net_io_counters 快照
 # ═══════════════════════════════════════════════════════════
 _last_net_io = None
@@ -263,6 +309,7 @@ def get_metrics():
     - bandwidth_usage：两次采样间网络吞吐量差值（Mbps）
     - workload_active：当前是否有 stress 负载在运行
     - workload_remaining_seconds：剩余负载时间
+    - edge_alerts：边缘侧第一层阈值就地判定结果（边缘计算下沉）
     """
     # CPU / 内存：读本容器 cgroup v2 统计，与 `docker stats` 口径一致
     cpu_usage = _measure_cpu_percent()
@@ -284,6 +331,9 @@ def get_metrics():
         workload_active = _stress_process is not None and _stress_process.poll() is None
         remaining = max(0.0, _stress_end_time - time.time()) if workload_active else 0.0
 
+    # 边缘就地判定（第一层阈值规则，在设备侧完成）
+    edge_alerts = _local_edge_judge(cpu_usage, memory_usage, network_latency)
+
     return {
         'cpu_usage': cpu_usage,
         'memory_usage': memory_usage,
@@ -292,6 +342,7 @@ def get_metrics():
         'bandwidth_usage': bandwidth_usage,
         'workload_active': workload_active,
         'workload_remaining_seconds': int(remaining),
+        'edge_alerts': edge_alerts,          # 边缘侧第一层就地判定结果
         'timestamp': datetime.now().isoformat(),
     }
 
